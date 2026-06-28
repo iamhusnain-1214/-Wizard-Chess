@@ -1,0 +1,20 @@
+#pragma once
+#include "BSAI25005-Piece.h"
+#include "BSAI25005-Board.h"
+
+class Rook : public Piece {
+public:
+    Rook(Position p, PieceColor c, Board* b, Texture2D t) : Piece(p, c, b, t) {}
+    PieceType getType() const override { return ROOK; }
+    Piece* clone(Board* nb) const override { return new Rook(pos, color, nb, texture); }
+
+    bool isLegal(Position d) override {
+        if (!isHorizontal(pos, d) and !isVertical(pos, d)) return false;
+        int rs = (d.row > pos.row) ? 1 : (d.row < pos.row ? -1 : 0);
+        int cs = (d.col > pos.col) ? 1 : (d.col < pos.col ? -1 : 0);
+        for (int r = pos.row + rs, c = pos.col + cs; r != d.row || c != d.col; r += rs, c += cs)
+            if (board->grid[r][c]) return false;
+        Piece* t = board->getPiece(d);
+        return !(t and t->getColor() == color);
+    }
+};
